@@ -20,7 +20,8 @@ class JiraClient(BaseAtlassianClient):
     ) -> List[Dict[str, Any]]:
         """Search Jira issues using JQL"""
         cloud_id = await self.get_cloud_id()
-        url = f"{self.jira_base}/{cloud_id}/rest/api/3/search"
+        # Updated to use the new /search/jql endpoint (migration from deprecated /search)
+        url = f"{self.jira_base}/{cloud_id}/rest/api/3/search/jql"
         data = {
             "jql": jql,
             "maxResults": max_results,
@@ -100,6 +101,7 @@ class JiraClient(BaseAtlassianClient):
         issue_key: str,
         summary: Optional[str] = None,
         description: Optional[str] = None,
+        story_points: Optional[float] = None,
     ) -> Dict[str, Any]:
         """Update a Jira issue"""
         cloud_id = await self.get_cloud_id()
@@ -119,6 +121,10 @@ class JiraClient(BaseAtlassianClient):
                     }
                 ],
             }
+        if story_points is not None:
+            # Story points custom field (customfield_10036)
+            # Ensure it's a float/number (handle string conversion if needed)
+            fields["customfield_10036"] = float(story_points)
 
         data = {"fields": fields}
         await self.make_request("PUT", url, json=data)

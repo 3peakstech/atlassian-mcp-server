@@ -44,3 +44,6 @@ venv.bak/
 # OS
 .DS_Store
 Thumbs.db
+
+# Configuration files with secrets
+config.json

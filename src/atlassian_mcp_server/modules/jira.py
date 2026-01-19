@@ -1,6 +1,6 @@
 """Jira module for core Jira functionality."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from mcp.server import Server
 
@@ -75,13 +75,25 @@ class JiraModule(BaseModule):
             issue_key: str,
             summary: Optional[str] = None,
             description: Optional[str] = None,
+            story_points: Optional[Union[float, int, str]] = None,
         ) -> Dict[str, Any]:
-            """Update an existing Jira issue."""
+            """Update an existing Jira issue.
+            
+            Args:
+                issue_key: The issue key (e.g., 'PROJ-123')
+                summary: Brief title of the issue (optional)
+                description: Detailed description of the issue (optional)
+                story_points: Story points value (hours) - updates customfield_10036 (optional)
+            """
             if not self.client or not self.client.config.access_token:
                 raise ValueError(
                     "Not authenticated. Use authenticate_atlassian tool first."
                 )
-            return await self.client.jira_update_issue(issue_key, summary, description)
+            # Convert story_points to float if provided (handle string/int inputs)
+            story_points_float = None
+            if story_points is not None:
+                story_points_float = float(story_points)
+            return await self.client.jira_update_issue(issue_key, summary, description, story_points_float)
 
         @server.tool()
         async def jira_add_comment(issue_key: str, comment: str) -> Dict[str, Any]:
