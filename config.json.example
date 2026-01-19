@@ -1,0 +1,5 @@
+{
+    "ATLASSIAN_SITE_URL": "https://your-domain.atlassian.net",
+    "ATLASSIAN_CLIENT_ID": "your-oauth-client-id",
+    "ATLASSIAN_CLIENT_SECRET": "your-oauth-client-secret"
+}
